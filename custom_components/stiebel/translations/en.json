@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Stiebel",
+        "description": "Monitors the Stiebel app (AppDaemon, separate instance) via its health reports.",
+        "data": {
+          "stale_timeout": "Minutes without report before the entity is set to offline"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "health": {
+        "name": "Health"
+      },
+      "script_version": {
+        "name": "Script Version"
+      }
+    }
+  },
+  "services": {
+    "set_health": {
+      "name": "Set health",
+      "description": "Set the health state of the Stiebel app (called by the AppDaemon app).",
+      "fields": {
+        "state": {
+          "name": "State",
+          "description": "Current health state: ok or error"
+        }
+      }
+    }
+  }
+}

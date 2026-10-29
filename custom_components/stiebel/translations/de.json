@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Stiebel",
+        "description": "Überwacht die Stiebel-App (AppDaemon, eigene Instanz) über deren Health-Reports.",
+        "data": {
+          "stale_timeout": "Minuten ohne Report, bevor die Entity auf offline gesetzt wird"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "health": {
+        "name": "Zustand"
+      },
+      "script_version": {
+        "name": "Skript-Version"
+      }
+    }
+  },
+  "services": {
+    "set_health": {
+      "name": "Zustand setzen",
+      "description": "Setzt den Health-Zustand der Stiebel-App (wird von der AppDaemon-App aufgerufen).",
+      "fields": {
+        "state": {
+          "name": "Zustand",
+          "description": "Aktueller Health-Zustand: ok oder error"
+        }
+      }
+    }
+  }
+}
