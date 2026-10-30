@@ -17,6 +17,8 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import event as ha_event
 from homeassistant.util import dt as dt_util
 
@@ -140,3 +142,20 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.services.async_remove(DOMAIN, SERVICE_SET_HEALTH)
         hass.services.async_remove(DOMAIN, SERVICE_SET_VALUE)
     return unloaded
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: dr.DeviceEntry
+) -> bool:
+    """Nur Geräte ohne Entities löschen erlauben (Altlasten-Bereinigung).
+
+    Das leere "Stiebel"-Altgerät (aus früheren Versionen, identifier
+    ('stiebel', 'stiebel')) kann so entfernt werden; Geräte mit Entities
+    (Hauptgerät mit Health/Version sowie die Untergeräte Kessel/Manager/
+    Heizmodul/Bedienmodul 2) bleiben vor versehentlichem Löschen geschützt.
+    """
+    entity_registry = er.async_get(hass)
+    return not any(
+        entry.device_id == device_entry.id
+        for entry in entity_registry.entities.values()
+    )
