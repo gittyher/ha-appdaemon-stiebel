@@ -108,6 +108,10 @@ _SIGNAL_SPECS: list[tuple[str, str, str, str, str, str, str, str]] = [
     ("stiebel_heizmodul_waermeertrag_heiz_tag_kwh", "Wärme Ertrag Heizung Tag kWh", "HEIZMODUL", "sensor", "energy", "kWh", "total_increasing", "mdi:fire"),
     ("stiebel_heizmodul_waermeertrag_heiz_sum_kwh", "Wärme Ertrag Heizung Summe kWh", "HEIZMODUL", "sensor", "energy", "kWh", "total_increasing", "mdi:fire"),
     ("stiebel_heizmodul_waermeertrag_heiz_sum_mwh", "Wärme Ertrag Heizung Summe MWh", "HEIZMODUL", "sensor", "energy", "MWh", "total_increasing", "mdi:fire"),
+    # --- COP (berechnet aus den Summenzählern; siehe apps/stiebel/signals.py) ---
+    ("stiebel_heizmodul_cop_ww", "COP Warmwasser", "HEIZMODUL", "sensor", "power_factor", "", "measurement", "mdi:gauge"),
+    ("stiebel_heizmodul_cop_heizung", "COP Heizung", "HEIZMODUL", "sensor", "power_factor", "", "measurement", "mdi:gauge"),
+    ("stiebel_heizmodul_cop_gesamt", "COP Gesamt", "HEIZMODUL", "sensor", "power_factor", "", "measurement", "mdi:gauge"),
     # --- Betriebszustand ---
     ("stiebel_manager_programmschalter", "Programmschalter", "MANAGER", "sensor", "", "", "", "mdi:dip-switch"),
     # --- Einstellungen (lesen) ---

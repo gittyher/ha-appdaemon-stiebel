@@ -38,6 +38,7 @@ DEVICE_CLASS_MAP: dict[str, SensorDeviceClass] = {
     "power": SensorDeviceClass.POWER,
     "energy": SensorDeviceClass.ENERGY,
     "duration": SensorDeviceClass.DURATION,
+    "power_factor": SensorDeviceClass.POWER_FACTOR,
 }
 
 
