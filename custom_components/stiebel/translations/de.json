@@ -30,6 +30,20 @@
           "description": "Aktueller Health-Zustand: ok oder error"
         }
       }
+    },
+    "set_value": {
+      "name": "Datenpunkt setzen",
+      "description": "Setzt einen Datenpunkt der Wärmepumpe (wird von der AppDaemon-App aufgerufen).",
+      "fields": {
+        "key": {
+          "name": "Schlüssel",
+          "description": "unique_id der Entity (z. B. stiebel_kessel_aussentemp)"
+        },
+        "value": {
+          "name": "Wert",
+          "description": "Anzeigewert des Datenpunkts"
+        }
+      }
     }
   }
 }

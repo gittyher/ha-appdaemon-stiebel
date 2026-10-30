@@ -30,6 +30,20 @@
           "description": "Current health state: ok or error"
         }
       }
+    },
+    "set_value": {
+      "name": "Set data point",
+      "description": "Set a heat pump data point (called by the AppDaemon app).",
+      "fields": {
+        "key": {
+          "name": "Key",
+          "description": "Entity unique_id (e.g. stiebel_kessel_aussentemp)"
+        },
+        "value": {
+          "name": "Value",
+          "description": "Display value of the data point"
+        }
+      }
     }
   }
 }

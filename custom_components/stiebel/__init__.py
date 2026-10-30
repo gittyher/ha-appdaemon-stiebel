@@ -4,6 +4,8 @@ Die Entities werden von der App auf dem eigenen AppDaemon-Server
 (appdaemon-stiebel) per Service gesetzt:
 - stiebel.set_health: Health (mit Stale-Check, ohne frischen Report
   "offline") und die zentrale Skript-Version des Reporters.
+- stiebel.set_value: Datenpunkte der Wärmepumpe (key = unique_id der
+  Sensor-Entity, value = Anzeigewert).
 """
 
 from __future__ import annotations
@@ -23,8 +25,10 @@ from .const import (
     DEFAULT_STALE_TIMEOUT,
     DOMAIN,
     EVENT_REPORT,
+    EVENT_VALUE,
     PLATFORMS,
     SERVICE_SET_HEALTH,
+    SERVICE_SET_VALUE,
     STALE_CHECK_INTERVAL,
     VALID_STATES,
 )
@@ -48,15 +52,17 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Registriert den set_health-Service und den Stale-Check."""
+    """Registriert set_health/set_value und den Stale-Check."""
     state = HealthState(
         timedelta(minutes=entry.data.get(CONF_STALE_TIMEOUT, DEFAULT_STALE_TIMEOUT))
     )
     # "version" = zentrale Skript-Version des Reporters (AppDaemon-Server);
     # wird mit jedem Report aktualisiert und in der Text-Entity angezeigt.
+    # "values" = letzte per set_value gemeldete Datenpunkte (key -> Wert).
     store: dict[str, Any] = {
         "state": state,
         "version": None,
+        "values": {},
     }
     hass.data[DOMAIN] = store
 
@@ -70,6 +76,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         state.set(call.data["state"], sent_at)
         hass.bus.async_fire(EVENT_REPORT)
 
+    async def _handle_set_value(call: ServiceCall) -> None:
+        store["values"][call.data["key"]] = call.data["value"]
+        hass.bus.async_fire(EVENT_VALUE)
+
     hass.services.async_register(
         DOMAIN,
         SERVICE_SET_HEALTH,
@@ -79,6 +89,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 vol.Required("state"): vol.In(list(VALID_STATES)),
                 vol.Optional("timestamp"): _validate_timestamp,
                 vol.Optional("version"): cv.string,
+            }
+        ),
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SET_VALUE,
+        _handle_set_value,
+        schema=vol.Schema(
+            {
+                vol.Required("key"): cv.string,
+                vol.Required("value"): vol.Any(str, int, float),
             }
         ),
     )
@@ -109,7 +130,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Entfernt Plattformen, Stale-Check und den Service."""
+    """Entfernt Plattformen, Stale-Check und die Services."""
     store = hass.data.get(DOMAIN)
     if store and store.get("unsub_stale"):
         store["unsub_stale"]()
@@ -117,4 +138,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unloaded:
         hass.data.pop(DOMAIN, None)
         hass.services.async_remove(DOMAIN, SERVICE_SET_HEALTH)
+        hass.services.async_remove(DOMAIN, SERVICE_SET_VALUE)
     return unloaded

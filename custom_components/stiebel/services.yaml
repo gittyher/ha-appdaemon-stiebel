@@ -17,3 +17,17 @@ set_health:
       example: "0.1.0"
       selector:
         text:
+set_value:
+  name: Datenpunkt setzen
+  description: Setzt einen Datenpunkt der Wärmepumpe (key = unique_id der Entity, value = Anzeigewert). Wird von der AppDaemon-App aufgerufen.
+  fields:
+    key:
+      required: true
+      example: "stiebel_kessel_aussentemp"
+      selector:
+        text:
+    value:
+      required: true
+      example: "2.1"
+      selector:
+        text:
